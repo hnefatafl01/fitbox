@@ -19,7 +19,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/users', users);
 
 app.get('/', (req, res) => {
-    res.json({ message: "Welcome to fitbox"});
+    res.json({ message: "Welcome to Fitbox"});
 })
 
 app.listen(3000, () => {
