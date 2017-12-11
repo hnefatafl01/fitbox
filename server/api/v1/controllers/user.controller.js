@@ -18,16 +18,14 @@ module.exports = {
         });
     },
     createUser: function(req, res) {
-        let password = Auth.hashPassword(req.body.password);
-        console.log(password);
-        res.send(password);
-        // return User.create({ username: req.body.username, password: req.body.password }, (err, user) => {
-        //     if (err) { 
-        //         throw new Error(err);
-        //         res.status(500).send(status.CreateError);
-        //     }
-        //     res.send(user);
-        // });
+        let hashed = Auth.hashPassword(req.body.password);
+        return User.create({ username: req.body.username, password: hashed }, (err, user) => {
+            if (err) { 
+                throw new Error(err);
+                res.status(500).send(status.CreateError);
+            }
+            res.send(user);
+        });
     },
     getUser: function(req, res) {
         return User.findOne({ _id: req.params.id }, (err, user) => {
