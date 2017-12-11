@@ -56,5 +56,4 @@ module.exports = {
             res.send("Deleted user with ID: " + result._id);
         });
     }
-    
 }
