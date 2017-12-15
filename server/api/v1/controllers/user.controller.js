@@ -46,20 +46,21 @@ module.exports = {
         if (!ObjectID.isValid(req.params.id)) {
             res.status(404).send();
         }
-        return User.findOneAndUpdate(
-            { _id: req.params.id }, 
-            {$set: { 
+        return User.findByIdAndUpdate(
+            req.params.id, 
+            { $set: {
                 username: req.body.username,
                 password: req.body.password 
-            }},
+              }
+            },
             { new: true },
             (err, user) => {
                 if (!user) {
                     return res.status(404).send();
                 }
                 if (err) {
-                    throw new Error(err);
-                    return res.status(400).send();
+                    console.error(err);
+                    res.status(400).send();
                 }
                 res.send({user});
         });

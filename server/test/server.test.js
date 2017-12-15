@@ -19,7 +19,6 @@ describe('Server', () => {
     //     });
     // });
 
-
     var users = [{
             _id: new ObjectID(),
             username:'test1',
@@ -115,15 +114,64 @@ describe('Server', () => {
                 .get(`/users/abcd1234`)
                 .expect(404)
                 .end(done);
-        })
-
+        });
     });
 
-    describe('DELETE /user/:id', () => {
+    describe('PATCH /users/:id/edit', () => {
+        it('should return an updated user', (done) => {
+            let username = "test update!";
+
+            request(app)
+                .patch(`/users/${users[1]._id.toHexString()}/edit`)
+                .send({ username, password: users[1].password })
+                .expect(200)
+                .expect(res => {
+                    expect(res.body.user.username).toBe(username);
+                    expect(res.body.user.password).toBe(users[1].password);
+                })
+                .end(done);
+        });
+
+        it('should return 404 if user not found', (done) => {
+            request(app)
+                .patch(`/users/${new ObjectID().toHexString()}/edit`)
+                .expect(404)
+                .expect((res) => {
+                    expect(res.body.user).toBe();
+                })
+                .end(done);
+        });
+
+        it('should return 404 if id not valid', (done) => {
+            request(app)
+                .patch(`/users/abcd1234/edit`)
+                .expect(404)
+                .end(done);
+        });
+    });
+
+    describe('DELETE /user/:id/delete', () => {
         it('should delete a user by id', (done) => {
             request(app)
                 .delete(`/users/${users[0]._id.toHexString()}/delete`)
                 .expect(200)
+                .end(done);
+        });
+
+        it('should return 404 if user not found', (done) => {
+            request(app)
+                .delete(`/users/${new ObjectID().toHexString()}/delete`)
+                .expect(404)
+                .expect((res) => {
+                    expect(res.body.user).toBe();
+                })
+                .end(done);
+        });
+
+        it('should return 404 if id not valid', (done) => {
+            request(app)
+                .delete(`/users/abcd1234/delete`)
+                .expect(404)
                 .end(done);
         });
     });
