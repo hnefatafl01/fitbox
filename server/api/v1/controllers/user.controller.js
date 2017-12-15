@@ -43,6 +43,9 @@ module.exports = {
         });
     },
     updateUser: function(req, res) {
+        if (!ObjectID.isValid(req.params.id)) {
+            res.status(404).send();
+        }
         return User.findOneAndUpdate(
             { _id: req.params.id }, 
             {$set: { 
@@ -51,20 +54,29 @@ module.exports = {
             }},
             { new: true },
             (err, user) => {
+                if (!user) {
+                    return res.status(404).send();
+                }
                 if (err) {
                     throw new Error(err);
-                    res.status(400).send(status.BadReq);
+                    return res.status(400).send();
                 }
                 res.send({user});
         });
     },
     deleteUser: function(req, res) {
-        return User.findByIdAndRemove({ _id: req.params.id }, (err, result) => {
+        if (!ObjectID.isValid(req.params.id)) {
+            res.status(404).send();
+        }
+        return User.findByIdAndRemove(req.params.id, (err, user) => {
+            if (!user) {
+               return res.status(404).send();
+            } 
             if (err) {
                 throw new Error(err);
-                res.status(500).send(status.DeleteError);
+                res.status(400).send({})
             }
-            res.send("Deleted user with ID: " + result._id);
+            res.send({user});
         });
     }
 }
