@@ -1,11 +1,9 @@
 const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
-const db = mongoose.connect(process.env.DB_URI, { useMongoClient: true });
 
-db.on('error', () => {
-    console.error.bind(console, 'connection error');
-    process.exit();
-});
-db.once('open', () => console.log('connected db'));
+mongoose
+    .connect(process.env.MONGODB_URI, { useMongoClient: true })
+    .then((db) => console.log('connected to db'),
+    (err) => console.error(err));
 
 module.exports = { mongoose };

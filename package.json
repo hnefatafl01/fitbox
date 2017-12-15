@@ -4,7 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "mocha server/**/*.test.js",
+    "start": "node server/server.js",
+    "test": "export NODE_ENV=test || SET NODE_ENV=test && mocha server/**/*.test.js",
     "test-watch": "nodemon --exec npm \"test\""
   },
   "keywords": [],
@@ -14,7 +15,6 @@
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.2",
     "cookie-parser": "^1.4.3",
-    "dotenv": "^4.0.0",
     "express": "^4.16.2",
     "mongoose": "^4.13.6",
     "nodemon": "^1.12.5"
