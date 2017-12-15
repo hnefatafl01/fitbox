@@ -1,3 +1,4 @@
+const { ObjectID } = require('mongodb');
 const mongoose = require('mongoose');
 const User = require('../models/user.model');
 const status = {
@@ -14,39 +15,47 @@ module.exports = {
                 throw new Error(err);
                 res.status(400).send(status.BadReq);
             }
-            res.send(users);
+            res.send({users});
         });
     },
     createUser: function(req, res) {
-        let hashed = Auth.hashPassword(req.body.password);
-        return User.create({ username: req.body.username, password: hashed }, (err, user) => {
-            if (err) { 
-                throw new Error(err);
-                res.status(500).send(status.CreateError);
+        // let hashed = Auth.hashPassword(req.body.password);
+        return User.create(
+            { username: req.body.username, password: req.body.password },
+            (err, user) => {
+                if (err) { 
+                    throw new Error(err);
+                    res.status(500).send(status.CreateError);
+                }
+                res.send({user});
             }
-            res.send(user);
-        });
+        );
     },
     getUser: function(req, res) {
+        if (!ObjectID.isValid(req.params.id)) {
+            return res.status(404).send()
+        }
         return User.findOne({ _id: req.params.id }, (err, user) => {
-            if (err) {
-                throw new Error(err);
-                res.status(400).send(status.BadReq);
+            if (!user || err) {
+                return res.status(404).send();
             }
-            res.send(user);
+            res.send({user});
         });
     },
     updateUser: function(req, res) {
         return User.findOneAndUpdate(
             { _id: req.params.id }, 
-            { username: req.body.username, password: req.body.password },
+            {$set: { 
+                username: req.body.username,
+                password: req.body.password 
+            }},
             { new: true },
             (err, user) => {
                 if (err) {
                     throw new Error(err);
                     res.status(400).send(status.BadReq);
                 }
-                res.send(user);
+                res.send({user});
         });
     },
     deleteUser: function(req, res) {

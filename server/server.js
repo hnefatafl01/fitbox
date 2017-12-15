@@ -31,4 +31,4 @@ function validateUser(username, password) {
     
 }
 
-module.exports.app = app;
+module.exports = { app };
