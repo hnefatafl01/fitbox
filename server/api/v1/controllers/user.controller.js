@@ -5,7 +5,7 @@ const status = {
     DeleteError: { message: "ServerError: Could not delete user"},
     CreateError: { message: "ServerError: Could not delete user"},
 }
-const Auth = require('../auth/auth');
+const Auth = require('../auth/authHelpers');
 
 module.exports = {
     getUsers: function(req, res) {
