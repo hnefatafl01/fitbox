@@ -1,6 +1,7 @@
 const { ObjectID } = require('mongodb');
 const mongoose = require('mongoose');
 const User = require('../models/user.model');
+
 const status = {
     BadReq: { message: "Bad Request: Could not retrieve users"},
     DeleteError: { message: "ServerError: Could not delete user"},
