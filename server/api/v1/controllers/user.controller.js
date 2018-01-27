@@ -1,6 +1,7 @@
 const { ObjectID } = require('mongodb');
 const mongoose = require('mongoose');
-const User = require('../models/user.model');
+const { User } = require('../models/user.model');
+const _ = require('lodash');
 
 const status = {
     BadReq: { message: "Bad Request: Could not retrieve users"},
@@ -12,25 +13,12 @@ const Auth = require('../auth/authHelpers');
 module.exports = {
     getUsers: function(req, res) {
         return User.find({}, (err, users) => {
-            if (err) { 
+            if (err) {
                 throw new Error(err);
                 res.status(400).send(status.BadReq);
             }
-            res.send({users});
+            res.send(users);
         });
-    },
-    createUser: function(req, res) {
-        // let hashed = Auth.hashPassword(req.body.password);
-        return User.create(
-            { username: req.body.username, password: req.body.password },
-            (err, user) => {
-                if (err) { 
-                    throw new Error(err);
-                    res.status(500).send(status.CreateError);
-                }
-                res.send({user});
-            }
-        );
     },
     getUser: function(req, res) {
         if (!ObjectID.isValid(req.params.id)) {
@@ -40,7 +28,7 @@ module.exports = {
             if (!user || err) {
                 return res.status(404).send();
             }
-            res.send({user});
+            res.send(user);
         });
     },
     updateUser: function(req, res) {
@@ -63,7 +51,7 @@ module.exports = {
                     console.error(err);
                     res.status(400).send();
                 }
-                res.send({user});
+                res.send(user);
         });
     },
     deleteUser: function(req, res) {
@@ -78,7 +66,38 @@ module.exports = {
                 throw new Error(err);
                 res.status(400).send({})
             }
-            res.send({user});
+            res.send(user);
         });
+    },
+    signupUser: function (req, res) {
+        var body = _.pick(req.body, ['email', 'password']);
+        var user = new User(body);
+        user.save()
+            .then((user) => {
+                if (!user) {
+                    res.status(400).send({})
+                }
+                const token = user.generateAuthToken();
+                res.header('x-auth', token).send(user);
+            });
+    },
+    loginUser: (req, res) => {
+        var body = _.pick(req.body, ['email', 'password']);
+        var user = new User(body);
+        User.findByCredentials(body.email, body.password)
+            .then((user) => {
+                if(!user) {
+                    res.status(400).send({});
+                }
+                const token = user.generateAuthToken();
+                res.header('x-auth', token).send(user);
+            });
+    },
+    logoutUser: function(req, res) { 
+        if (!req.token) {
+            res.status(400).send();
+        }
+        req.user.removeToken(req.token);
+        res.status(200).send();
     }
 }

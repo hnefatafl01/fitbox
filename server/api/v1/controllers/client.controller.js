@@ -33,5 +33,15 @@ module.exports = {
                 }
                 res.send(client);
         });
+    },
+    deleteClient: function(req, res) {
+        const id = req.params.id;
+        return Client.findByIdAndRemove(id, (err, client) => {
+            if (err) {
+                throw new Error(err);
+                res.status(500).send({ message: "Could not remove client" });
+            }
+            res.send(client);
+        });
     }
 }
