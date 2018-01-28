@@ -1,4 +1,4 @@
-const authenticate = require('../auth/authenticate');
+const { authenticate } = require('../auth/authenticate');
 
 const mongoose = require('mongoose');
 const router = require('express').Router();
