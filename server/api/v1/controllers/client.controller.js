@@ -3,7 +3,7 @@ const Client = require('../models/client.model');
 
 module.exports = {
     getClients: function(req, res) {
-        return Client.find({}, (err, clients) => {
+        return Client.find({ _creator: req.user._id }, (err, clients) => {
             if (err) { 
                 throw new Error(err);
                 res.status(400).send({ message: 'bad request' });
@@ -13,7 +13,7 @@ module.exports = {
     },
     createClient: function(req, res) {
         return Client.create(
-            { name: req.body.name },
+            { name: req.body.name, _creator: req.user._id },
             (err, client) => {
             if (err) {
                 throw new Error(err);
@@ -25,7 +25,7 @@ module.exports = {
     getClient: function(req, res) {
         const id = req.params.id;
         return Client.findOne(
-            { _id: id },
+            { _id: id, _creator:req.user._id },
             (err, client) => {
                 if (err) {
                     throw new Error(err);
@@ -36,7 +36,7 @@ module.exports = {
     },
     deleteClient: function(req, res) {
         const id = req.params.id;
-        return Client.findByIdAndRemove(id, (err, client) => {
+        return Client.findOneAndRemove({_creator:req.user._id, _id : id}, (err, client) => {
             if (err) {
                 throw new Error(err);
                 res.status(500).send({ message: "Could not remove client" });

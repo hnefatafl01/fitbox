@@ -8,7 +8,7 @@ const status = {
     DeleteError: { message: "ServerError: Could not delete user"},
     CreateError: { message: "ServerError: Could not delete user"},
 }
-const Auth = require('../auth/authHelpers');
+const Auth = require('../auth/authenticate');
 
 module.exports = {
     getUsers: function(req, res) {
@@ -77,7 +77,10 @@ module.exports = {
                 if (!user) {
                     res.status(400).send({})
                 }
-                const token = user.generateAuthToken();
+                user.generateAuthToken()
+                    .then((token) => {
+                        res.header('x-auth', token).send(user);
+                    })
                 res.header('x-auth', token).send(user);
             });
     },
@@ -89,9 +92,12 @@ module.exports = {
                 if(!user) {
                     res.status(400).send({});
                 }
-                const token = user.generateAuthToken();
-                res.header('x-auth', token).send(user);
-            });
+                user.generateAuthToken()
+                    .then((token) => {
+                        res.header('x-auth', token).send(user);
+                        console.log('headers sent', res.headersSent);
+                    })
+            }).catch(e => console.log('Error', e))
     },
     logoutUser: function(req, res) { 
         if (!req.token) {
